@@ -3,7 +3,8 @@
 
 with source as (
 
-    select * from {{ source('RAW', 'raw_orders') }}
+    -- Using ref() to reference the seed data directly
+    select * from {{ ref('raw_orders') }}
 
 ),
 
