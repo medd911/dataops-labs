@@ -1,10 +1,21 @@
 # Week 1: Sources, Models, and Seeds
 
-Welcome to Week 1 of the DataOps & dbt Mentorship Program! In this week, we'll cover the fundamental building blocks of a dbt project.
+ Welcome to Week 1 of the DataOps & dbt Mentorship Program! In this week, we'll cover the fundamental building blocks of a dbt project.
 
 ---
 
-## 🛠️ Environment Setup (Python Virtual Environment)
+## 🍴 Step 1: Fork & Clone
+Before starting the setup, ensure you have your own copy of the repository:
+1. **Fork** this repository to your own GitHub account.
+2. **Clone** your fork to your local machine:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/dataops-labs.git
+   cd dataops-labs
+   ```
+
+---
+
+## 🚀 Step 2: Environment Setup (Python Virtual Environment)
 
 Before we start, let's set up a Python virtual environment and install dbt locally. This allows you to run dbt commands directly from your machine instead of using Docker (though Docker is available for the database and Airflow).
 
