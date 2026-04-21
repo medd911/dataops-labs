@@ -1,35 +1,32 @@
--- ══════════════════════════════════════════════════════════════
--- 🟡 STAGE · stg_orders
--- Purpose : Clean, cast, and standardise the raw orders seed.
--- Rules   : This is the ONLY layer that may touch raw sources.
--- ══════════════════════════════════════════════════════════════
+-- STAGE · stg_orders
+-- Clean, cast, and standardise the raw orders seed.
 
 with source as (
 
-    select * from {{ ref('raw_orders') }}
+    select * from {{ source('RAW', 'raw_orders') }}
 
 ),
 
 cleaned as (
 
     select
-        -- ── Primary key ──────────────────────────────────────
+        -- Primary key
         order_id::integer                               as order_id,
 
-        -- ── Foreign key ──────────────────────────────────────
+        -- Foreign keys
         trim(customer_id)::text                         as customer_id,
 
-        -- ── Date ─────────────────────────────────────────────
+        -- Dates
         order_date::date                                as order_date,
 
-        -- ── Status — lowercase + trim for consistency ────────
+        -- Status
         lower(trim(status))::text                       as order_status,
 
-        -- ── Product details ──────────────────────────────────
+        -- Order details
         trim(store_id)::text                            as store_id,
         coalesce(shipping_fee, 0)::numeric(12,2)        as shipping_fee,
 
-        -- ── Currency — uppercase for ISO consistency ─────────
+        -- Currency
         upper(trim(currency))::text                     as currency
 
     from source
