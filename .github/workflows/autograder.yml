@@ -1,0 +1,66 @@
+name: Autograder & Evaluation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dataops
+          POSTGRES_PASSWORD: dataops_pass_2024
+          POSTGRES_DB: ecommerce
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install dbt-postgres==1.9.*
+          pip install pandas  # for grading script if needed
+
+      - name: Run dbt Unit Tests
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: dataops
+          POSTGRES_PASSWORD: dataops_pass_2024
+          POSTGRES_DB: ecommerce
+        run: |
+          cd dbt_learning
+          dbt deps
+          dbt test --select mode:unit
+        continue-on-error: true
+
+
+      - name: Run Grading Script
+        id: grading
+        run: |
+          python scripts/grade_assignment.py > grade_report.md
+          cat grade_report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Post Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: grade_report.md
