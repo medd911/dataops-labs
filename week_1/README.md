@@ -11,6 +11,7 @@ Before starting the setup, ensure you have your own copy of the repository:
    ```bash
    git clone https://github.com/YOUR_USERNAME/dataops-labs.git
    cd dataops-labs
+   cd dbt_learning
    ```
 
 ---
@@ -101,6 +102,28 @@ Create `models/stage/sources.yml` that declares all 5 raw tables as dbt sources 
 
 ### Task 1.3 — Build STAGE Models (40 pts)
 Create one staging model per seed table in `models/stage/`. You will do basic cleaning like trimming text, standardizing cases, and casting data types.
+
+**💡 Pro-Tip: Example Staging Model**
+Here is how `stg_orders.sql` might look. Notice how we use `source()` to pull from our seeds, and `coalesce()` to handle null values:
+
+```sql
+with source as (
+    select * from {{ source('RAW', 'raw_orders') }}
+),
+
+cleaned as (
+    select
+        order_id::integer                               as order_id,
+        trim(customer_id)::text                         as customer_id,
+        order_date::date                                as order_date,
+        lower(trim(status))::text                       as order_status,
+        coalesce(shipping_fee, 0)::numeric(12,2)        as shipping_fee
+    from source
+)
+
+select * from cleaned
+```
+
 **Deliverable:** All 5 SQL files under `models/stage/`.
 
 *   `stg_customers.sql` (Trim names, lowercase email, cast `signup_date` to date)

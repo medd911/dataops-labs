@@ -2,6 +2,9 @@
 
 A comprehensive DataOps mentorship program covering dbt, orchestration, and modern data engineering practices.
 
+> [!IMPORTANT]
+> All dbt commands must be executed from within the `dbt_learning/` directory.
+
 > **🎯 CURRENT FOCUS: [Week 1 - Sources, Models, and Seeds](./week_1/)**
 
 ## Syllabus
