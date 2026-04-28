@@ -5,12 +5,12 @@ A comprehensive DataOps mentorship program covering dbt, orchestration, and mode
 > [!IMPORTANT]
 > All dbt commands must be executed from within the `dbt_learning/` directory.
 
-> **🎯 CURRENT FOCUS: [Week 1 - Sources, Models, and Seeds](./week_1/)**
+> **🎯 CURRENT FOCUS: [Week 2 - Materializations, Incremental Models & Snapshots](./week_2/)**
 
 ## Syllabus
 
 - ✅ **[Week 1: Sources, Models, and Seeds](./week_1/)**
-- ⏳ Week 2: Materializations (Coming Soon)
+- ✅ **[Week 2: Materializations, Incremental Models & Snapshots](./week_2/)**
 - ⏳ Week 3: Data Tests (Coming Soon)
 - ⏳ Week 4: Macros and Packages (Coming Soon)
 - ⏳ Week 5: Hooks, Exposures, and Documentation (Coming Soon)

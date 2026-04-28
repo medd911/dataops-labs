@@ -32,9 +32,14 @@ models:
     # 🟡 STAGE layer — cleansing, casting, standardisation
     stage:
       +schema: STAGE
-    #      +materialized: view
+      +materialized: view
 
     # 🔵 DEV layer — dimensions, facts, business logic
     dev:
       +schema: DEV
-#      +materialized: table
+      +materialized: table
+
+# ── Snapshots ─────────────────────────────────────────────────
+snapshots:
+  dbt_learning:
+    +target_schema: RAW
