@@ -1,12 +1,13 @@
 """
 DataOps Mentorship — Automated Grading Script
 ==============================================
-Grades student dbt submissions for Weeks 1–3.
+Grades student dbt submissions for Weeks 1–4.
 
 Usage:
     python scripts/grade_assignment.py --week 1
     python scripts/grade_assignment.py --week 2
     python scripts/grade_assignment.py --week 3
+    python scripts/grade_assignment.py --week 4
 """
 
 import argparse
@@ -30,6 +31,7 @@ DEV_DIR = os.path.join(MODELS_DIR, "dev")
 SNAPSHOTS_DIR = os.path.join(DBT_PROJECT_DIR, "snapshots")
 TESTS_DIR = os.path.join(DBT_PROJECT_DIR, "tests")
 DOCS_DIR = os.path.join(DBT_PROJECT_DIR, "docs")
+MACROS_DIR = os.path.join(DBT_PROJECT_DIR, "macros")
 RESULTS_PATH = os.path.join(DBT_PROJECT_DIR, "target", "run_results.json")
 
 
@@ -411,6 +413,209 @@ def grade_week_3():
 
 
 # ═════════════════════════════════════════════════════════════
+#  WEEK 4 GRADING
+# ═════════════════════════════════════════════════════════════
+
+def grade_week_4():
+    """Grade Week 4: Macros and Packages."""
+    report = []
+    total = 0
+    max_score = 0
+
+    report.append("# 📊 Week 4 — Grade Report\n")
+    report.append("## Macros and Packages\n")
+    report.append("| Task | Check | Points | Status |")
+    report.append("| :--- | :--- | :---: | :---: |")
+
+    checks = []
+    dbt_results = load_dbt_results()
+
+    # ── Task 4.1: Jinja Basics — Monthly Revenue (15 pts) ────
+    fct_monthly_path = os.path.join(DEV_DIR, "fct_monthly_revenue.sql")
+
+    checks.append(("4.1", *check_file_exists(fct_monthly_path, "fct_monthly_revenue.sql exists"), 3))
+
+    checks.append(("4.1", *check_file_contains(
+        fct_monthly_path,
+        r"\{%\s*set\s+",
+        "Uses {% set %} variable"
+    ), 3))
+
+    checks.append(("4.1", *check_file_contains(
+        fct_monthly_path,
+        r"\{%\s*for\s+",
+        "Uses {% for %} loop"
+    ), 4))
+
+    checks.append(("4.1", *check_file_contains(
+        fct_monthly_path,
+        r"(jan|feb|mar|apr)_revenue",
+        "Generates monthly revenue columns"
+    ), 2))
+
+    checks.append(("4.1", *check_dbt_result(
+        dbt_results,
+        "fct_monthly_revenue",
+        "fct_monthly_revenue runs successfully"
+    ), 3))
+
+    # ── Task 4.2: Currency Converter Macro (30 pts) ──────────
+    macro_currency_path = os.path.join(MACROS_DIR, "convert_currency.sql")
+
+    checks.append(("4.2", *check_file_exists(macro_currency_path, "convert_currency.sql exists"), 5))
+
+    checks.append(("4.2", *check_file_contains(
+        macro_currency_path,
+        r"\{%\s*macro\s+convert_currency",
+        "Defines convert_currency macro"
+    ), 5))
+
+    checks.append(("4.2", *check_file_contains(
+        macro_currency_path,
+        r"OMR",
+        "Handles OMR currency"
+    ), 3))
+
+    checks.append(("4.2", *check_file_contains(
+        macro_currency_path,
+        r"EUR",
+        "Handles EUR currency"
+    ), 3))
+
+    checks.append(("4.2", *check_file_contains(
+        macro_currency_path,
+        r"2\.60|2\.6[^0-9]",
+        "OMR rate is 2.60"
+    ), 2))
+
+    checks.append(("4.2", *check_file_contains(
+        macro_currency_path,
+        r"1\.08",
+        "EUR rate is 1.08"
+    ), 2))
+
+    # Check macro is used in fct_order_details
+    fct_path = os.path.join(DEV_DIR, "fct_order_details.sql")
+    checks.append(("4.2", *check_file_contains(
+        fct_path,
+        r"convert_currency",
+        "convert_currency used in fct_order_details"
+    ), 5))
+
+    checks.append(("4.2", *check_file_contains(
+        fct_path,
+        r"total_amount_usd",
+        "total_amount_usd column present in fct_order_details"
+    ), 5))
+
+    # ── Task 4.3: Revenue Macro (20 pts) ─────────────────────
+    macro_revenue_path = os.path.join(MACROS_DIR, "calculate_revenue.sql")
+
+    checks.append(("4.3", *check_file_exists(macro_revenue_path, "calculate_revenue.sql exists"), 5))
+
+    checks.append(("4.3", *check_file_contains(
+        macro_revenue_path,
+        r"\{%\s*macro\s+calculate_revenue",
+        "Defines calculate_revenue macro"
+    ), 5))
+
+    checks.append(("4.3", *check_file_contains(
+        fct_path,
+        r"calculate_revenue",
+        "calculate_revenue used in fct_order_details"
+    ), 5))
+
+    checks.append(("4.3", *check_dbt_result(
+        dbt_results,
+        "fct_order_details",
+        "fct_order_details runs successfully"
+    ), 5))
+
+    # ── Task 4.4: dbt-utils Package (20 pts) ─────────────────
+    packages_path = os.path.join(DBT_PROJECT_DIR, "packages.yml")
+
+    checks.append(("4.4", *check_file_exists(packages_path, "packages.yml exists"), 3))
+
+    checks.append(("4.4", *check_file_contains(
+        packages_path,
+        r"dbt.utils|dbt_utils",
+        "packages.yml references dbt-utils"
+    ), 2))
+
+    # Check dbt_packages directory exists (dbt deps was run)
+    dbt_packages_dir = os.path.join(DBT_PROJECT_DIR, "dbt_packages", "dbt_utils")
+    if os.path.isdir(dbt_packages_dir):
+        checks.append(("4.4", True, "✅ dbt deps installed dbt_utils", 5))
+    else:
+        checks.append(("4.4", False, "❌ dbt_utils not found in dbt_packages/ (run dbt deps)", 5))
+
+    checks.append(("4.4", *check_file_contains(
+        fct_path,
+        r"generate_surrogate_key|dbt_utils\.generate",
+        "generate_surrogate_key used in fct_order_details"
+    ), 5))
+
+    # Check for a second dbt-utils usage anywhere in models
+    all_usages = set()
+    for root, dirs, files in os.walk(MODELS_DIR):
+        for fname in files:
+            if fname.endswith(".sql"):
+                fpath = os.path.join(root, fname)
+                content = file_exists(fpath)
+                if content:
+                    all_usages.update(re.findall(r"dbt_utils\.(\w+)", content, re.IGNORECASE))
+
+    if len(all_usages) >= 2:
+        second_usage = True
+        second_msg = f"✅ Multiple dbt-utils macros used: {', '.join(sorted(all_usages))}"
+    else:
+        second_usage = False
+        second_msg = "❌ Second dbt-utils macro not found in models"
+
+    checks.append(("4.4", second_usage, second_msg, 5))
+
+    # ── Task 4.5: Macro Documentation (15 pts) ───────────────
+    macros_yml_path = os.path.join(MACROS_DIR, "macros.yml")
+
+    checks.append(("4.5", *check_file_exists(macros_yml_path, "macros.yml exists"), 3))
+
+    checks.append(("4.5", *check_file_contains(
+        macros_yml_path,
+        r"name:\s*convert_currency",
+        "convert_currency documented"
+    ), 3))
+
+    checks.append(("4.5", *check_file_contains(
+        macros_yml_path,
+        r"name:\s*calculate_revenue",
+        "calculate_revenue documented"
+    ), 3))
+
+    checks.append(("4.5", *check_file_contains(
+        macros_yml_path,
+        r"arguments:",
+        "Macro arguments documented"
+    ), 3))
+
+    checks.append(("4.5", *check_file_contains(
+        macros_yml_path,
+        r"description:",
+        "Descriptions provided"
+    ), 3))
+
+    # ── Build report ────────────────────────────────────────
+    for task, passed, message, points in checks:
+        max_score += points
+        earned = points if passed else 0
+        total += earned
+        status = f"{earned}/{points}"
+        report.append(f"| {task} | {message} | {status} | {'✅' if passed else '❌'} |")
+
+    _append_summary(report, total, max_score)
+    return "\n".join(report)
+
+
+# ═════════════════════════════════════════════════════════════
 #  SHARED
 # ═════════════════════════════════════════════════════════════
 
@@ -438,8 +643,8 @@ def main():
         description="DataOps Mentorship — Assignment Grader"
     )
     parser.add_argument(
-        "--week", type=int, required=True, choices=[1, 2, 3],
-        help="Which week to grade (1, 2, or 3)"
+        "--week", type=int, required=True, choices=[1, 2, 3, 4],
+        help="Which week to grade (1, 2, 3, or 4)"
     )
     args = parser.parse_args()
 
@@ -449,6 +654,8 @@ def main():
         print(grade_week_2())
     elif args.week == 3:
         print(grade_week_3())
+    elif args.week == 4:
+        print(grade_week_4())
 
 
 if __name__ == "__main__":
