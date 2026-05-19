@@ -5,7 +5,7 @@ A comprehensive DataOps mentorship program covering dbt, orchestration, and mode
 > [!IMPORTANT]
 > All dbt commands must be executed from within the `dbt_learning/` directory.
 
-> **🎯 CURRENT FOCUS: [Week 4 - Macros and Packages](./week_4/)**
+> **🎯 CURRENT FOCUS: [Week 5 - Hooks, Exposures, and Documentation](./week_5/)**
 
 ## Syllabus
 
@@ -13,5 +13,5 @@ A comprehensive DataOps mentorship program covering dbt, orchestration, and mode
 - ✅ **[Week 2: Materializations, Incremental Models & Snapshots](./week_2/)**
 - ✅ **[Week 3: Data Tests](./week_3/)**
 - ✅ **[Week 4: Macros and Packages](./week_4/)**
-- ⏳ Week 5: Hooks, Exposures, and Documentation (Coming Soon)
+- ✅ **[Week 5: Hooks, Exposures, and Documentation](./week_5/)**
 - ⏳ Week 6: Airflow Automation (Coming Soon)
